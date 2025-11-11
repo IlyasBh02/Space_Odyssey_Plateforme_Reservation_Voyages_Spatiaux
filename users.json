@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Space",
+      "email": "john@space.com",
+      "password": "john123"
+    },
+    {
+      "id": 2,
+      "name": "Sarah Explorer", 
+      "email": "sarah@space.com",
+      "password": "sarah123"
+    },
+    {
+      "id": 3,
+      "name": "Mike Astronaut",
+      "email": "mike@space.com",
+      "password": "mike123"
+    }
+  ]
+}

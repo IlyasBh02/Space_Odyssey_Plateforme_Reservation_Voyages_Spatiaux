@@ -102,6 +102,13 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
         }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
     </style>
 </head>
 <body class="text-white font-exo min-h-screen">
@@ -120,10 +127,10 @@
             
             <div class="hidden md:flex space-x-8">
                 <a href="/index.html" class="nav-link hover:text-neon-blue transition-colors">Home</a>
-                <a href="destinations.html" class="nav-link hover:text-neon-blue transition-colors">Destinations</a>
-                <a href="booking.html" class="nav-link hover:text-neon-blue transition-colors">Booking</a>
-                <a href="about.html" class="nav-link hover:text-neon-blue transition-colors">About</a>
-                <a href="login.html" class="nav-link hover:text-neon-blue transition-colors text-neon-blue">Login</a>
+                <a href="/html/destinations.html" class="nav-link hover:text-neon-blue transition-colors">Destinations</a>
+                <a href="/html/booking.html" class="nav-link hover:text-neon-blue transition-colors">Booking</a>
+                <a href="/html/about.html" class="nav-link hover:text-neon-blue transition-colors">About</a>
+                <a href="/html/login.html" class="nav-link hover:text-neon-blue transition-colors text-neon-blue">Login</a>
             </div>
             
             <div class="md:hidden">
@@ -147,15 +154,15 @@
                     <p class="text-gray-300">Access your account and journey details</p>
                 </div>
                 
-                <form class="space-y-6">
+                <form id="login-form" class="space-y-6">
                     <div>
                         <label class="block text-gray-300 mb-2">Email Address</label>
-                        <input type="email" class="form-input w-full px-4 py-3" placeholder="Enter your email">
+                        <input type="email" id="email" class="form-input w-full px-4 py-3" placeholder="Enter your email" required>
                     </div>
                     
                     <div>
                         <label class="block text-gray-300 mb-2">Password</label>
-                        <input type="password" class="form-input w-full px-4 py-3" placeholder="Enter your password">
+                        <input type="password" id="password" class="form-input w-full px-4 py-3" placeholder="Enter your password" required>
                     </div>
                     
                     <div class="flex items-center justify-between">
@@ -164,6 +171,10 @@
                             <label for="remember" class="text-gray-300 text-sm">Remember me</label>
                         </div>
                         <a href="#" class="text-neon-blue text-sm hover:underline">Forgot password?</a>
+                    </div>
+
+                    <div class="error-message text-center" id="login-error">
+                        Invalid email or password
                     </div>
                     
                     <button type="submit" class="btn-primary text-white w-full py-3 rounded-lg font-bold glow">
@@ -265,9 +276,64 @@
                 container.appendChild(star);
             }
         }
-        
+
+        // Check user credentials
+        async function checkUser(email, password) {
+            try {
+                const response = await fetch('../users.json');
+                const data = await response.json();
+                
+                // Find user with matching email and password
+                const user = data.users.find(u => u.email === email && u.password === password);
+                return user;
+                
+            } catch (error) {
+                console.log('Error loading users file');
+                return null;
+            }
+        }
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            // Clear previous error
+            errorElement.style.display = 'none';
+            
+            const user = await checkUser(email, password);
+            
+            if (user) {
+                // Save user session
+                const userSession = {
+                    isLoggedIn: true,
+                    userId: user.id,
+                    name: user.name,
+                    email: user.email,
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('userSession', JSON.stringify(userSession));
+                
+                // Redirect to home
+                window.location.href = '../index.html';
+                
+            } else {
+                errorElement.style.display = 'block';
+            }
+        });
+
+        // Check if user is already logged in
         document.addEventListener('DOMContentLoaded', function() {
             createStars();
+            
+            const session = localStorage.getItem('userSession');
+            if (session && JSON.parse(session).isLoggedIn) {
+                window.location.href = '../index.html';
+            }
         });
     </script>
 </body>

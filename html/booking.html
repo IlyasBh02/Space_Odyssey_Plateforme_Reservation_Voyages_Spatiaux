@@ -1151,7 +1151,7 @@
       // Load accommodations from JSON
       async function loadAccommodations() {
         try {
-          const response = await fetch("accommodations.json");
+          const response = await fetch("../accommodations.json");
 
           if (!response.ok) {
             throw new Error(
@@ -1172,7 +1172,7 @@
       // Load destinations from JSON
       async function loadDestinations() {
         try {
-          const response = await fetch("destinations.json");
+          const response = await fetch("../destinations.json");
 
           if (!response.ok) {
             throw new Error(`Failed to load destinations: ${response.status}`);
