@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - SpaceVoyager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #0a0a18, #1a1a2e, #16213e);
+            background-attachment: fixed;
+        }
+        .booking-card {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body class="text-white font-exo min-h-screen">
+    <nav class="bg-gray-900/80 backdrop-blur-md border-b border-blue-500/20 py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-rocket text-white"></i>
+                </div>
+                <a href="index.html" class="font-orbitron text-xl font-bold">SpaceVoyager</a>
+            </div>
+            <div class="flex space-x-6">
+                <a href="index.html" class="hover:text-blue-400 transition-colors">Home</a>
+                <a href="destinations.html" class="hover:text-blue-400 transition-colors">Destinations</a>
+                <a href="booking.html" class="hover:text-blue-400 transition-colors">Booking</a>
+                <a href="my-bookings.html" class="text-blue-400">My Bookings</a>
+                <a href="#" class="hover:text-blue-400 transition-colors hidden" id="logout-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-12">
+        <h1 class="font-orbitron text-4xl text-center mb-12">My Bookings</h1>
+        
+        <div id="bookings-container" class="max-w-4xl mx-auto space-y-6">
+            <!-- Bookings will be loaded here -->
+        </div>
+        
+        <div id="no-bookings" class="text-center py-12 hidden">
+            <i class="fas fa-rocket text-6xl text-gray-500 mb-4"></i>
+            <h2 class="text-2xl mb-4">No Bookings Yet</h2>
+            <p class="text-gray-400 mb-6">Start your space journey by making a booking!</p>
+            <a href="booking.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                Book Now
+            </a>
+        </div>
+    </main>
+
+    <script>
+        function loadBookings() {
+            const bookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+            const container = document.getElementById('bookings-container');
+            const noBookings = document.getElementById('no-bookings');
+            
+            if (bookings.length === 0) {
+                container.classList.add('hidden');
+                noBookings.classList.remove('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            noBookings.classList.add('hidden');
+            container.innerHTML = '';
+            
+            bookings.forEach(booking => {
+                const bookingCard = document.createElement('div');
+                bookingCard.className = 'booking-card p-6';
+                bookingCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-orbitron text-xl">${getDestinationName(booking.destination)}</h3>
+                            <p class="text-gray-400">Booking ID: ${booking.id}</p>
+                        </div>
+                        <span class="text-green-400 font-bold">${booking.totalPrice}</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
+                        <div>
+                            <strong>Departure:</strong><br>
+                            ${new Date(booking.departureDate).toLocaleDateString()}
+                        </div>
+                        <div>
+                            <strong>Package:</strong><br>
+                            ${booking.package}
+                        </div>
+                        <div>
+                            <strong>Passengers:</strong><br>
+                            ${booking.passengers.length}
+                        </div>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button onclick="viewTicket('${booking.id}')" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            View Ticket
+                        </button>
+                        <button onclick="editBooking('${booking.id}')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            Edit
+                        </button>
+                        <button onclick="cancelBooking('${booking.id}')" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                            Cancel
+                        </button>
+                    </div>
+                `;
+                container.appendChild(bookingCard);
+            });
+        }
+
+        function getDestinationName(id) {
+            const names = {
+                'moon': 'The Moon',
+                'mars': 'Mars', 
+                'europa': 'Europa',
+                'titan': 'Titan'
+            };
+            return names[id] || id;
+        }
+
+        function viewTicket(bookingId) {
+            window.location.href = `ticket.html?id=${bookingId}`;
+        }
+
+        function editBooking(bookingId) {
+            // In a real app, this would load the booking into the booking form
+            alert('Edit functionality would load booking ' + bookingId);
+            window.location.href = `booking.html?edit=${bookingId}`;
+        }
+
+        function cancelBooking(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                const bookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+                const updatedBookings = bookings.filter(b => b.id !== bookingId);
+                localStorage.setItem('userBookings', JSON.stringify(updatedBookings));
+                loadBookings();
+            }
+        }
+
+        function updateAuthLinks() {
+            const session = localStorage.getItem('userSession');
+            const isLoggedIn = session && JSON.parse(session).isLoggedIn;
+            
+            if (!isLoggedIn) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const userData = JSON.parse(session);
+            document.getElementById('logout-link').classList.remove('hidden');
+            document.getElementById('logout-link').innerHTML = `Logout (${userData.username})`;
+        }
+
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('userSession');
+            window.location.href = 'index.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthLinks();
+            loadBookings();
+        });
+    </script>
+</body>
+</html>

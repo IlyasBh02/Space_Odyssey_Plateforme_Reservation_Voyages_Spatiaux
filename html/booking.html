@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Your Journey — SpaceVoyager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "space-dark": "#0a0a18",
+              "space-blue": "#1a1a2e",
+              "space-purple": "#16213e",
+              "neon-blue": "#0ea5e9",
+              "neon-purple": "#8b5cf6",
+              "neon-cyan": "#06b6d4",
+            },
+            fontFamily: {
+              orbitron: ["Orbitron", "sans-serif"],
+              exo: ["Exo 2", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background: linear-gradient(to bottom, #0a0a18, #1a1a2e, #16213e);
+        background-attachment: fixed;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(
+            circle at 10% 20%,
+            rgba(14, 165, 233, 0.1) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 90% 60%,
+            rgba(139, 92, 246, 0.1) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 40% 80%,
+            rgba(6, 182, 212, 0.1) 0%,
+            transparent 20%
+          );
+        z-index: -1;
+      }
+
+      .star {
+        position: absolute;
+        background-color: white;
+        border-radius: 50%;
+        animation: twinkle 5s infinite;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.2;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .glow {
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+      }
+
+      .text-glow {
+        text-shadow: 0 0 10px rgba(14, 165, 233, 0.7);
+      }
+
+      .nav-link {
+        position: relative;
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(to right, #0ea5e9, #8b5cf6);
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .mobile-menu {
+        transition: all 0.3s ease;
+        max-height: 0;
+        overflow: hidden;
+      }
+
+      .mobile-menu.open {
+        max-height: 300px;
+      }
+
+      .form-container {
+        background: rgba(22, 33, 62, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 15px;
+      }
+
+      .accommodation-card {
+        background: rgba(10, 10, 24, 0.5);
+        border: 2px solid rgba(14, 165, 233, 0.3);
+        border-radius: 10px;
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .accommodation-card:hover {
+        border-color: rgba(14, 165, 233, 0.6);
+        background: rgba(10, 10, 24, 0.7);
+      }
+
+      .accommodation-card.selected {
+        border-color: #0ea5e9;
+        background: rgba(14, 165, 233, 0.1);
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="date"],
+      select,
+      textarea {
+        background: rgba(10, 10, 24, 0.6);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="tel"]:focus,
+      input[type="date"]:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: rgba(156, 163, 175, 0.6);
+      }
+
+      .btn-primary {
+        background: linear-gradient(to right, #0ea5e9, #8b5cf6);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+      }
+
+      .btn-secondary {
+        background: rgba(14, 165, 233, 0.1);
+        border: 2px solid #0ea5e9;
+        color: #0ea5e9;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(14, 165, 233, 0.2);
+      }
+
+      input[type="radio"] {
+        accent-color: #0ea5e9;
+      }
+
+      .destination-info {
+        background: rgba(10, 10, 24, 0.6);
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .destination-info.hidden {
+        display: none;
+      }
+
+      .accommodations-section {
+        display: none;
+      }
+
+      .accommodations-section.visible {
+        display: block;
+      }
+
+      .passenger-form {
+        background: rgba(10, 10, 24, 0.4);
+        border: 1px solid rgba(14, 165, 233, 0.2);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .passenger-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+      }
+
+      .remove-passenger {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        color: #ef4444;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .remove-passenger:hover {
+        background: rgba(239, 68, 68, 0.3);
+      }
+
+      .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: none;
+      }
+
+      .input-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 5px rgba(239, 68, 68, 0.3) !important;
+      }
+
+      .input-success {
+        border-color: #10b981 !important;
+        box-shadow: 0 0 5px rgba(16, 185, 129, 0.3) !important;
+      }
+    </style>
+  </head>
+  <body class="text-white font-exo min-h-screen">
+    <!-- Stars Background -->
+    <div id="stars-container"></div>
+
+    <!-- Navigation -->
+    <nav
+      class="bg-space-dark/80 backdrop-blur-md border-b border-neon-blue/20 sticky top-0 z-50"
+    >
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center glow"
+          >
+            <i class="fas fa-rocket text-white"></i>
+          </div>
+          <a href="index.html" class="font-orbitron text-xl font-bold text-glow"
+            >SpaceVoyager</a
+          >
+        </div>
+
+        <div class="hidden md:flex space-x-8">
+          <a
+            href="index.html"
+            class="nav-link hover:text-neon-blue transition-colors"
+            >Home</a
+          >
+          <a
+            href="destinations.html"
+            class="nav-link hover:text-neon-blue transition-colors"
+            >Destinations</a
+          >
+          <a
+            href="booking.html"
+            class="nav-link hover:text-neon-blue transition-colors text-neon-blue"
+            >Booking</a
+          >
+          <a
+            href="about.html"
+            class="nav-link hover:text-neon-blue transition-colors"
+            >About</a
+          >
+          <a
+            href="login.html"
+            class="nav-link hover:text-neon-blue transition-colors"
+            >Login</a
+          >
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden">
+          <button id="mobile-menu-button" class="text-white focus:outline-none">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="mobile-menu md:hidden bg-space-dark/90 backdrop-blur-md"
+      >
+        <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+          <a
+            href="index.html"
+            class="hover:text-neon-blue transition-colors py-2 border-b border-neon-blue/20"
+            >Home</a
+          >
+          <a
+            href="destinations.html"
+            class="hover:text-neon-blue transition-colors py-2 border-b border-neon-blue/20"
+            >Destinations</a
+          >
+          <a
+            href="booking.html"
+            class="hover:text-neon-blue transition-colors py-2 border-b border-neon-blue/20 text-neon-blue"
+            >Booking</a
+          >
+          <a
+            href="about.html"
+            class="hover:text-neon-blue transition-colors py-2 border-b border-neon-blue/20"
+            >About</a
+          >
+          <a
+            href="login.html"
+            class="hover:text-neon-blue transition-colors py-2"
+            >Login</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12 relative z-10">
+      <!-- Header Section -->
+      <section class="text-center mb-12">
+        <h1 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-glow">
+          Book Your Space Journey
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+          Begin your adventure to the stars. Fill out the form below to reserve
+          your spot on our next space voyage.
+        </p>
+      </section>
+
+      <!-- Booking Form -->
+      <div class="form-container max-w-4xl mx-auto p-8">
+        <form id="booking-form">
+          <!-- Journey Details Section -->
+          <div class="mb-8">
+            <h2 class="font-orbitron text-2xl mb-6">Journey Details</h2>
+
+            <!-- Destination -->
+            <div class="mb-6">
+              <label class="block mb-2 text-gray-300">Destination</label>
+              <select class="h-12" id="destination" required>
+                <option value="">Select your destination</option>
+                <!-- Options will be populated by JavaScript -->
+              </select>
+
+              <!-- Destination Info Display -->
+              <div id="destination-info" class="destination-info hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3
+                      class="font-orbitron text-neon-blue mb-2"
+                      id="destination-name"
+                    ></h3>
+                    <p
+                      class="text-sm text-gray-300"
+                      id="destination-description"
+                    ></p>
+                  </div>
+                  <div class="text-sm">
+                    <div class="flex justify-between mb-1">
+                      <span class="text-gray-400">Travel Duration:</span>
+                      <span id="destination-duration"></span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-gray-400">Distance:</span>
+                      <span id="destination-distance"></span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-gray-400">Gravity:</span>
+                      <span id="destination-gravity"></span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-gray-400">Temperature:</span>
+                      <span id="destination-temperature"></span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-gray-400">Price:</span>
+                      <span
+                        class="font-bold text-neon-cyan"
+                        id="destination-price"
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Departure Date -->
+            <div class="mb-6">
+              <label class="block mb-2 text-gray-300">Departure Date</label>
+              <input type="date" id="departure-date" required />
+              <div class="error-message" id="departure-date-error"></div>
+            </div>
+
+            <!-- Number of Passengers -->
+            <div class="mb-6">
+              <label class="block mb-3 text-gray-300"
+                >Number of Passengers</label
+              >
+              <div class="flex flex-wrap gap-4">
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="passengers"
+                    value="solo"
+                    class="mr-2"
+                    checked
+                  />
+                  <span>Solo Traveler</span>
+                </label>
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="passengers"
+                    value="couple"
+                    class="mr-2"
+                  />
+                  <span>Couple (2)</span>
+                </label>
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="passengers"
+                    value="group"
+                    class="mr-2"
+                  />
+                  <span>Group (3-6)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Accommodation Type -->
+            <div
+              class="mb-6 accommodations-section"
+              id="accommodations-section"
+            >
+              <label class="block mb-3 text-gray-300">Accommodation Type</label>
+              <div
+                id="accommodations-container"
+                class="grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
+                <!-- Accommodation cards will be populated by JavaScript -->
+              </div>
+              <input type="hidden" id="accommodation" value="" />
+              <div class="error-message" id="accommodation-error"></div>
+            </div>
+          </div>
+
+          <!-- Personal Information Section -->
+          <div class="mb-8">
+            <h2 class="font-orbitron text-2xl mb-6">Personal Information</h2>
+
+            <!-- Passenger Forms Container -->
+            <div id="passenger-forms-container">
+              <!-- Primary Passenger Form -->
+              <div class="passenger-form" id="passenger-form-0">
+                <div class="passenger-header">
+                  <h3 class="font-orbitron text-neon-blue">
+                    Primary Passenger
+                  </h3>
+                  <!-- No remove button for primary passenger -->
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <!-- First Name -->
+                  <div>
+                    <label class="block mb-2 text-gray-300">First Name</label>
+                    <input
+                      type="text"
+                      name="first-name[]"
+                      placeholder="Enter your first name"
+                      required
+                      data-validation="name"
+                    />
+                    <div class="error-message" data-error="first-name"></div>
+                  </div>
+
+                  <!-- Last Name -->
+                  <div>
+                    <label class="block mb-2 text-gray-300">Last Name</label>
+                    <input
+                      type="text"
+                      name="last-name[]"
+                      placeholder="Enter your last name"
+                      required
+                      data-validation="name"
+                    />
+                    <div class="error-message" data-error="last-name"></div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <!-- Email -->
+                  <div>
+                    <label class="block mb-2 text-gray-300"
+                      >Email Address</label
+                    >
+                    <input
+                      type="email"
+                      name="email[]"
+                      placeholder="Enter your email"
+                      required
+                      data-validation="email"
+                    />
+                    <div class="error-message" data-error="email"></div>
+                  </div>
+
+                  <!-- Phone -->
+                  <div>
+                    <label class="block mb-2 text-gray-300">Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone[]"
+                      placeholder="Enter your phone number"
+                      required
+                      data-validation="phone"
+                    />
+                    <div class="error-message" data-error="phone"></div>
+                  </div>
+                </div>
+
+                <!-- Special Requirements -->
+                <div class="mb-6">
+                  <label class="block mb-2 text-gray-300"
+                    >Special Requirements</label
+                  >
+                  <textarea
+                    class="pl-3 pt-1"
+                    name="special-requirements[]"
+                    rows="4"
+                    placeholder="Any special requirements or notes..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+              <button
+                type="button"
+                id="add-passenger-btn"
+                class="btn-secondary text-white px-8 py-3 rounded-lg font-bold text-lg flex-1"
+              >
+                Add Passenger
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-primary text-white px-8 py-4 rounded-lg font-bold text-lg w-full glow"
+          >
+            Confirm Booking
+          </button>
+
+          <p class="text-center text-gray-400 text-sm mt-4">
+            By confirming, you agree to our
+            <a href="#" class="text-neon-blue hover:underline"
+              >Terms of Service</a
+            >
+            and
+            <a href="#" class="text-neon-blue hover:underline"
+              >Space Travel Agreement</a
+            >.
+          </p>
+        </form>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="bg-space-dark border-t border-neon-blue/20 py-8 mt-12 relative z-10"
+    >
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="mb-4 md:mb-0">
+            <div class="flex items-center space-x-2 mb-2">
+              <div
+                class="w-8 h-8 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center"
+              >
+                <i class="fas fa-rocket text-white text-sm"></i>
+              </div>
+              <span class="font-orbitron text-lg">SpaceVoyager</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              © 2023 SpaceVoyager. All rights reserved.
+            </p>
+          </div>
+
+          <div class="flex space-x-6 mb-4 md:mb-0">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-neon-blue transition-colors text-xl"
+            >
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-neon-blue transition-colors text-xl"
+            >
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-neon-blue transition-colors text-xl"
+            >
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-neon-blue transition-colors text-xl"
+            >
+              <i class="fab fa-youtube"></i>
+            </a>
+          </div>
+
+          <div class="text-center md:text-right">
+            <p class="text-gray-400 text-sm">
+              Contact us: info@spacevoyager.com
+            </p>
+            <p class="text-gray-400 text-sm">+1 (800) SPACE-TRIP</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Global variables to store data
+      let accommodationsData = [];
+      let destinationsData = [];
+      let passengerCount = 1; // Start with 1 (primary passenger)
+      let maxPassengers = 1; // Will be set based on selection
+
+      // Create stars background
+      function createStars() {
+        const container = document.getElementById("stars-container");
+        const starCount = 150;
+
+        for (let i = 0; i < starCount; i++) {
+          const star = document.createElement("div");
+          star.classList.add("star");
+
+          const size = Math.random() * 2 + 1;
+          star.style.width = `${size}px`;
+          star.style.height = `${size}px`;
+
+          star.style.left = `${Math.random() * 100}%`;
+          star.style.top = `${Math.random() * 100}%`;
+
+          star.style.animationDelay = `${Math.random() * 5}s`;
+
+          container.appendChild(star);
+        }
+      }
+
+      // Mobile menu toggle
+      document
+        .getElementById("mobile-menu-button")
+        .addEventListener("click", function () {
+          const menu = document.getElementById("mobile-menu");
+          menu.classList.toggle("open");
+        });
+
+      // Accommodation card selection
+      function setupAccommodationCardSelection() {
+        const accommodationCards = document.querySelectorAll(
+          ".accommodation-card"
+        );
+        const accommodationInput = document.getElementById("accommodation");
+
+        accommodationCards.forEach((card) => {
+          card.addEventListener("click", function () {
+            accommodationCards.forEach((c) => c.classList.remove("selected"));
+            this.classList.add("selected");
+            accommodationInput.value = this.dataset.type;
+            clearError("accommodation-error");
+          });
+        });
+      }
+
+      // Form validation functions
+      function validateName(name) {
+        const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+        return nameRegex.test(name.trim());
+      }
+
+      function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email.trim());
+      }
+
+      function validatePhone(phone) {
+        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+        return phoneRegex.test(phone.replace(/\s/g, ""));
+      }
+
+      function validateDate(date) {
+        const selectedDate = new Date(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return selectedDate >= today;
+      }
+
+      // Show error message
+      function showError(input, message) {
+        const errorElement = input.parentNode.querySelector(".error-message");
+        errorElement.textContent = message;
+        errorElement.style.display = "block";
+        input.classList.add("input-error");
+        input.classList.remove("input-success");
+      }
+
+      // Clear error message
+      function clearError(errorId) {
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+          errorElement.textContent = "";
+          errorElement.style.display = "none";
+        }
+      }
+
+      // Show success state
+      function showSuccess(input) {
+        const errorElement = input.parentNode.querySelector(".error-message");
+        errorElement.style.display = "none";
+        input.classList.remove("input-error");
+        input.classList.add("input-success");
+      }
+
+      // Validate input on blur
+      function setupInputValidation() {
+        const inputs = document.querySelectorAll("input[data-validation]");
+
+        inputs.forEach((input) => {
+          input.addEventListener("blur", function () {
+            validateInput(this);
+          });
+
+          input.addEventListener("input", function () {
+            // Clear error as user types
+            if (this.value.trim() !== "") {
+              const errorElement =
+                this.parentNode.querySelector(".error-message");
+              errorElement.style.display = "none";
+              this.classList.remove("input-error");
+            }
+          });
+        });
+      }
+
+      // Validate individual input
+      function validateInput(input) {
+        const value = input.value.trim();
+        const validationType = input.getAttribute("data-validation");
+
+        if (value === "") {
+          showError(input, "This field is required");
+          return false;
+        }
+
+        let isValid = false;
+        let errorMessage = "";
+
+        switch (validationType) {
+          case "name":
+            isValid = validateName(value);
+            errorMessage =
+              "Please enter a valid name (2-50 characters, letters only)";
+            break;
+          case "email":
+            isValid = validateEmail(value);
+            errorMessage = "Please enter a valid email address";
+            break;
+          case "phone":
+            isValid = validatePhone(value);
+            errorMessage = "Please enter a valid phone number";
+            break;
+        }
+
+        if (!isValid) {
+          showError(input, errorMessage);
+          return false;
+        } else {
+          showSuccess(input);
+          return true;
+        }
+      }
+
+      // Validate entire form
+      function validateForm() {
+        let isValid = true;
+
+        // Validate destination
+        const destination = document.getElementById("destination");
+        if (destination.value === "") {
+          showError(destination, "Please select a destination");
+          isValid = false;
+        } else {
+          clearError("destination-error");
+        }
+
+        // Validate departure date
+        const departureDate = document.getElementById("departure-date");
+        if (departureDate.value === "") {
+          showError(departureDate, "Please select a departure date");
+          isValid = false;
+        } else if (!validateDate(departureDate.value)) {
+          showError(
+            departureDate,
+            "Departure date must be today or in the future"
+          );
+          isValid = false;
+        } else {
+          clearError("departure-date-error");
+        }
+
+        // Validate accommodation
+        const accommodation = document.getElementById("accommodation");
+        if (accommodation.value === "") {
+          showError(accommodation, "Please select an accommodation type");
+          isValid = false;
+        } else {
+          clearError("accommodation-error");
+        }
+
+        // Validate passenger forms
+        const passengerForms = document.querySelectorAll(".passenger-form");
+        passengerForms.forEach((form, index) => {
+          const firstName = form.querySelector('input[name="first-name[]"]');
+          const lastName = form.querySelector('input[name="last-name[]"]');
+          const email = form.querySelector('input[name="email[]"]');
+          const phone = form.querySelector('input[name="phone[]"]');
+
+          if (!validateInput(firstName)) isValid = false;
+          if (!validateInput(lastName)) isValid = false;
+          if (!validateInput(email)) isValid = false;
+          if (!validateInput(phone)) isValid = false;
+        });
+
+        return isValid;
+      }
+
+      // Form submission
+      document
+        .getElementById("booking-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          if (validateForm()) {
+            alert(
+              "Thank you for your booking! We will contact you shortly to confirm your space journey."
+            );
+          }
+        });
+
+      // Add passenger form
+      document
+        .getElementById("add-passenger-btn")
+        .addEventListener("click", function () {
+          if (passengerCount < maxPassengers) {
+            addPassengerForm();
+          } else {
+            showMaxPassengerModal();
+          }
+        });
+
+      // Get passenger type based on selection
+      function getPassengerType() {
+        const selected = document.querySelector(
+          'input[name="passengers"]:checked'
+        );
+        return selected ? selected.value : "solo";
+      }
+
+      // Update max passengers based on selection
+      function updateMaxPassengers() {
+        const passengerType = getPassengerType();
+
+        switch (passengerType) {
+          case "solo":
+            maxPassengers = 1;
+            break;
+          case "couple":
+            maxPassengers = 2;
+            break;
+          case "group":
+            maxPassengers = 6;
+            break;
+        }
+
+        // Update button text
+        const addButton = document.getElementById("add-passenger-btn");
+        if (passengerType === "solo") {
+          addButton.style.display = "none";
+        } else {
+          addButton.style.display = "block";
+          addButton.textContent = `Add Passenger`;
+        }
+
+        // Remove extra forms if needed
+        const passengerForms = document.querySelectorAll(".passenger-form");
+        if (passengerForms.length > maxPassengers) {
+          for (let i = passengerForms.length - 1; i >= maxPassengers; i--) {
+            passengerForms[i].remove();
+          }
+          passengerCount = maxPassengers;
+        }
+      }
+
+      // Add passenger form
+      function addPassengerForm() {
+        if (passengerCount < maxPassengers) {
+          passengerCount++;
+
+          const container = document.getElementById(
+            "passenger-forms-container"
+          );
+          const newForm = document.createElement("div");
+          newForm.className = "passenger-form";
+          newForm.id = `passenger-form-${passengerCount}`;
+
+          newForm.innerHTML = `
+        <div class="passenger-header">
+          <h3 class="font-orbitron text-neon-blue">Passenger ${passengerCount}</h3>
+          <div class="remove-passenger" data-index="${passengerCount}">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- First Name -->
+          <div>
+            <label class="block mb-2 text-gray-300">First Name</label>
+            <input
+              type="text"
+              name="first-name[]"
+              placeholder="Enter passenger first name"
+              required
+              data-validation="name"
+            />
+            <div class="error-message" data-error="first-name"></div>
+          </div>
+
+          <!-- Last Name -->
+          <div>
+            <label class="block mb-2 text-gray-300">Last Name</label>
+            <input
+              type="text"
+              name="last-name[]"
+              placeholder="Enter passenger last name"
+              required
+              data-validation="name"
+            />
+            <div class="error-message" data-error="last-name"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Email -->
+          <div>
+            <label class="block mb-2 text-gray-300">Email Address</label>
+            <input
+              type="email"
+              name="email[]"
+              placeholder="Enter passenger email"
+              required
+              data-validation="email"
+            />
+            <div class="error-message" data-error="email"></div>
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block mb-2 text-gray-300">Phone Number</label>
+            <input
+              type="tel"
+              name="phone[]"
+              placeholder="Enter passenger phone number"
+              required
+              data-validation="phone"
+            />
+            <div class="error-message" data-error="phone"></div>
+          </div>
+        </div>
+
+        <!-- Special Requirements -->
+        <div class="mb-6">
+          <label class="block mb-2 text-gray-300"
+            >Special Requirements</label
+          >
+          <textarea
+            class="pl-3 pt-1"
+            name="special-requirements[]"
+            rows="4"
+            placeholder="Any special requirements or notes..."
+          ></textarea>
+        </div>
+      `;
+
+          container.appendChild(newForm);
+
+          // Update button text
+          document.getElementById(
+            "add-passenger-btn"
+          ).textContent = `Add Passenger`;
+
+          // Setup validation for new inputs
+          setupInputValidation();
+
+          // Add event listener for remove button
+          const removeButton = newForm.querySelector(".remove-passenger");
+          removeButton.addEventListener("click", function () {
+            const index = parseInt(this.getAttribute("data-index"));
+            removePassengerForm(index);
+          });
+        }
+      }
+
+      // Remove passenger form
+      function removePassengerForm(index) {
+        const formToRemove = document.getElementById(`passenger-form-${index}`);
+        if (formToRemove) {
+          formToRemove.remove();
+          passengerCount--;
+
+          // Update button text
+          document.getElementById(
+            "add-passenger-btn"
+          ).textContent = `Add Passenger`;
+
+          // Renumber remaining forms
+          const passengerForms = document.querySelectorAll(".passenger-form");
+          passengerForms.forEach((form, i) => {
+            if (i > 0) {
+              // Skip primary passenger
+              form.id = `passenger-form-${i + 1}`;
+              const header = form.querySelector(".passenger-header h3");
+              header.textContent = `Passenger ${i + 1}`;
+
+              const removeButton = form.querySelector(".remove-passenger");
+              removeButton.setAttribute("data-index", i + 1);
+            }
+          });
+        }
+      }
+
+      // Show max passenger modal
+      function showMaxPassengerModal() {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById("max-passenger-modal");
+
+        if (!modal) {
+          modal = document.createElement("div");
+          modal.id = "max-passenger-modal";
+          modal.className =
+            "fixed inset-0 flex items-center justify-center z-50 bg-black/70 backdrop-blur-sm";
+          modal.innerHTML = `
+        <div class="form-container max-w-md mx-4 p-6 relative">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center mx-auto mb-4 glow">
+              <i class="fas fa-users text-white text-xl"></i>
+            </div>
+            <h3 class="font-orbitron text-2xl mb-2 text-glow">Maximum Passengers Reached</h3>
+            <p class="text-gray-300">You've reached the maximum number of passengers for ${getPassengerType()} travel (${maxPassengers} ${
+            maxPassengers === 1 ? "person" : "people"
+          }).</p>
+          </div>
+          <div class="flex justify-center">
+            <button id="modal-ok-btn" class="btn-primary text-white px-6 py-3 rounded-lg font-bold">
+              Understood
+            </button>
+          </div>
+        </div>
+      `;
+          document.body.appendChild(modal);
+
+          // Add event listener for the OK button
+          document
+            .getElementById("modal-ok-btn")
+            .addEventListener("click", function () {
+              modal.remove();
+            });
+
+          // Close modal when clicking outside
+          modal.addEventListener("click", function (e) {
+            if (e.target === modal) {
+              modal.remove();
+            }
+          });
+        }
+
+        // Show the modal
+        modal.style.display = "flex";
+      }
+
+      // Load accommodations from JSON
+      async function loadAccommodations() {
+        try {
+          const response = await fetch("accommodations.json");
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to load accommodations: ${response.status}`
+            );
+          }
+
+          const data = await response.json();
+          accommodationsData = data.accommodations;
+
+          console.log("Accommodations loaded:", accommodationsData);
+        } catch (error) {
+          console.error("Error loading accommodations:", error);
+          alert("Unable to load accommodations. Please try again later.");
+        }
+      }
+
+      // Load destinations from JSON
+      async function loadDestinations() {
+        try {
+          const response = await fetch("destinations.json");
+
+          if (!response.ok) {
+            throw new Error(`Failed to load destinations: ${response.status}`);
+          }
+
+          const data = await response.json();
+          destinationsData = data.destinations;
+
+          const destinationSelect = document.getElementById("destination");
+
+          // Clear existing options except the first one
+          while (destinationSelect.children.length > 1) {
+            destinationSelect.removeChild(destinationSelect.lastChild);
+          }
+
+          // Add destinations from JSON
+          destinationsData.forEach((dest) => {
+            const option = document.createElement("option");
+            option.value = dest.id;
+            option.textContent = `${dest.name} - ${
+              dest.travelDuration
+            } - From $${dest.price.toLocaleString()}`;
+            option.setAttribute("data-destination", JSON.stringify(dest));
+            destinationSelect.appendChild(option);
+          });
+
+          // Add event listener to show destination info when selected
+          destinationSelect.addEventListener("change", function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const destinationInfo = document.getElementById("destination-info");
+            const accommodationsSection = document.getElementById(
+              "accommodations-section"
+            );
+
+            if (selectedOption.value) {
+              const dest = JSON.parse(
+                selectedOption.getAttribute("data-destination")
+              );
+
+              // Update destination info display
+              document.getElementById("destination-name").textContent =
+                dest.name;
+              document.getElementById("destination-description").textContent =
+                dest.description;
+              document.getElementById("destination-duration").textContent =
+                dest.travelDuration;
+              document.getElementById("destination-distance").textContent =
+                dest.distance;
+              document.getElementById("destination-gravity").textContent =
+                dest.gravity;
+              document.getElementById("destination-temperature").textContent =
+                dest.temperature;
+              document.getElementById(
+                "destination-price"
+              ).textContent = `$${dest.price.toLocaleString()} ${
+                dest.currency
+              }`;
+
+              // Show the destination info
+              destinationInfo.classList.remove("hidden");
+
+              // Show and populate accommodations for this destination
+              showAccommodationsForDestination(dest);
+              accommodationsSection.classList.add("visible");
+            } else {
+              // Hide the destination info and accommodations
+              destinationInfo.classList.add("hidden");
+              accommodationsSection.classList.remove("visible");
+            }
+          });
+        } catch (error) {
+          console.error("Error loading destinations:", error);
+
+          // Fallback: You can add some default options here if the fetch fails
+          const destinationSelect = document.getElementById("destination");
+          const fallbackOption = document.createElement("option");
+          fallbackOption.value = "";
+          fallbackOption.textContent = "Unable to load destinations";
+          fallbackOption.disabled = true;
+          destinationSelect.appendChild(fallbackOption);
+
+          // Show error message to user
+          alert("Unable to load destinations. Please try again later.");
+        }
+      }
+
+      // Show accommodations for selected destination
+      function showAccommodationsForDestination(destination) {
+        const accommodationsContainer = document.getElementById(
+          "accommodations-container"
+        );
+        const accommodationInput = document.getElementById("accommodation");
+
+        // Clear existing accommodation cards
+        accommodationsContainer.innerHTML = "";
+
+        // Get available accommodation IDs for this destination
+        const availableAccommodationIds = destination.accommodations || [];
+
+        // Filter accommodations to show only those available at this destination
+        const availableAccommodations = accommodationsData.filter((acc) =>
+          availableAccommodationIds.includes(acc.id)
+        );
+
+        // Create accommodation cards
+        availableAccommodations.forEach((acc, index) => {
+          const card = document.createElement("div");
+          card.className = `accommodation-card ${
+            index === 0 ? "selected" : ""
+          }`;
+          card.dataset.type = acc.id;
+
+          card.innerHTML = `
+        <h3 class="font-orbitron text-neon-blue mb-2">${acc.name}</h3>
+        <p class="text-sm text-gray-400">${acc.shortDescription}</p>
+        <div class="mt-3 text-xs text-gray-500">
+          <div class="flex justify-between mb-1">
+            <span>Size:</span>
+            <span>${acc.size}</span>
+          </div>
+          <div class="flex justify-between mb-1">
+            <span>Occupancy:</span>
+            <span>${acc.occupancy}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Price:</span>
+            <span class="font-bold text-neon-cyan">$${acc.pricePerDay}/day</span>
+          </div>
+        </div>
+      `;
+
+          accommodationsContainer.appendChild(card);
+        });
+
+        // Set the first accommodation as selected by default
+        if (availableAccommodations.length > 0) {
+          accommodationInput.value = availableAccommodations[0].id;
+        }
+
+        // Set up event listeners for the new accommodation cards
+        setupAccommodationCardSelection();
+      }
+
+      // Initialize on page load
+      document.addEventListener("DOMContentLoaded", async function () {
+        createStars();
+
+        // Setup passenger selection change
+        const passengerRadios = document.querySelectorAll(
+          'input[name="passengers"]'
+        );
+        passengerRadios.forEach((radio) => {
+          radio.addEventListener("change", function () {
+            updateMaxPassengers();
+          });
+        });
+
+        // Initialize max passengers
+        updateMaxPassengers();
+
+        // Setup input validation
+        setupInputValidation();
+
+        // Load both accommodations and destinations
+        await loadAccommodations();
+        await loadDestinations();
+      });
+
+      // Save form data to localStorage
+      function saveFormData() {
+        const formData = {
+          destination: document.getElementById("destination").value,
+          departureDate: document.getElementById("departure-date").value,
+          passengers: document.querySelector('input[name="passengers"]:checked')
+            .value,
+          accommodation: document.getElementById("accommodation").value,
+          passengerForms: [],
+        };
+
+        // Save passenger form data
+        const passengerForms = document.querySelectorAll(".passenger-form");
+        passengerForms.forEach((form, index) => {
+          const passengerData = {
+            firstName: form.querySelector('input[name="first-name[]"]').value,
+            lastName: form.querySelector('input[name="last-name[]"]').value,
+            email: form.querySelector('input[name="email[]"]').value,
+            phone: form.querySelector('input[name="phone[]"]').value,
+            specialRequirements: form.querySelector(
+              'textarea[name="special-requirements[]"]'
+            ).value,
+          };
+          formData.passengerForms.push(passengerData);
+        });
+
+        localStorage.setItem("bookingFormData", JSON.stringify(formData));
+      }
+
+      // Restore form data from localStorage
+      function restoreFormData() {
+        const savedData = localStorage.getItem("bookingFormData");
+        if (!savedData) return;
+
+        const formData = JSON.parse(savedData);
+
+        // Restore basic form fields
+        if (formData.destination) {
+          document.getElementById("destination").value = formData.destination;
+          // Trigger change event to load accommodations
+          document
+            .getElementById("destination")
+            .dispatchEvent(new Event("change"));
+        }
+
+        if (formData.departureDate) {
+          document.getElementById("departure-date").value =
+            formData.departureDate;
+        }
+
+        if (formData.passengers) {
+          const passengerRadio = document.querySelector(
+            `input[name="passengers"][value="${formData.passengers}"]`
+          );
+          if (passengerRadio) {
+            passengerRadio.checked = true;
+            updateMaxPassengers();
+          }
+        }
+
+        // Restore passenger forms after a delay to ensure accommodations are loaded
+        setTimeout(() => {
+          if (formData.accommodation) {
+            document.getElementById("accommodation").value =
+              formData.accommodation;
+            // Select the accommodation card
+            const accommodationCard = document.querySelector(
+              `.accommodation-card[data-type="${formData.accommodation}"]`
+            );
+            if (accommodationCard) {
+              document
+                .querySelectorAll(".accommodation-card")
+                .forEach((card) => card.classList.remove("selected"));
+              accommodationCard.classList.add("selected");
+            }
+          }
+
+          // Restore passenger forms
+          if (formData.passengerForms && formData.passengerForms.length > 0) {
+            // Remove all passenger forms except the primary one
+            const passengerForms = document.querySelectorAll(".passenger-form");
+            for (let i = passengerForms.length - 1; i > 0; i--) {
+              passengerForms[i].remove();
+            }
+
+            // Restore primary passenger data
+            const primaryPassenger = formData.passengerForms[0];
+            if (primaryPassenger) {
+              const primaryForm = document.getElementById("passenger-form-0");
+              primaryForm.querySelector('input[name="first-name[]"]').value =
+                primaryPassenger.firstName || "";
+              primaryForm.querySelector('input[name="last-name[]"]').value =
+                primaryPassenger.lastName || "";
+              primaryForm.querySelector('input[name="email[]"]').value =
+                primaryPassenger.email || "";
+              primaryForm.querySelector('input[name="phone[]"]').value =
+                primaryPassenger.phone || "";
+              primaryForm.querySelector(
+                'textarea[name="special-requirements[]"]'
+              ).value = primaryPassenger.specialRequirements || "";
+            }
+
+            // Add and restore additional passenger forms
+            for (let i = 1; i < formData.passengerForms.length; i++) {
+              if (i < maxPassengers) {
+                addPassengerForm();
+                const passengerData = formData.passengerForms[i];
+                const passengerForm = document.getElementById(
+                  `passenger-form-${i + 1}`
+                );
+
+                if (passengerForm && passengerData) {
+                  passengerForm.querySelector(
+                    'input[name="first-name[]"]'
+                  ).value = passengerData.firstName || "";
+                  passengerForm.querySelector(
+                    'input[name="last-name[]"]'
+                  ).value = passengerData.lastName || "";
+                  passengerForm.querySelector('input[name="email[]"]').value =
+                    passengerData.email || "";
+                  passengerForm.querySelector('input[name="phone[]"]').value =
+                    passengerData.phone || "";
+                  passengerForm.querySelector(
+                    'textarea[name="special-requirements[]"]'
+                  ).value = passengerData.specialRequirements || "";
+                }
+              }
+            }
+          }
+        }, 500); // Delay to ensure accommodations are loaded
+      }
+
+      // Clear form data from localStorage (optional - can be called after successful submission)
+      function clearFormData() {
+        localStorage.removeItem("bookingFormData");
+      }
+
+      // Add event listeners to save form data on input
+      function setupAutoSave() {
+        // Save on input for text fields
+        document
+          .querySelectorAll("input, select, textarea")
+          .forEach((element) => {
+            element.addEventListener("input", saveFormData);
+            element.addEventListener("change", saveFormData);
+          });
+
+        // Save on radio button change
+        document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+          radio.addEventListener("change", saveFormData);
+        });
+
+        // Save when accommodation is selected
+        document.addEventListener("click", function (e) {
+          if (e.target.closest(".accommodation-card")) {
+            setTimeout(saveFormData, 100);
+          }
+        });
+      }
+
+      // Update your existing form submission to clear saved data
+      document
+        .getElementById("booking-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          if (validateForm()) {
+            // Clear saved form data on successful submission
+            clearFormData();
+            alert(
+              "Thank you for your booking! We will contact you shortly to confirm your space journey."
+            );
+          }
+        });
+
+      // Update your existing DOMContentLoaded event listener
+      document.addEventListener("DOMContentLoaded", async function () {
+        createStars();
+
+        // Setup passenger selection change
+        const passengerRadios = document.querySelectorAll(
+          'input[name="passengers"]'
+        );
+        passengerRadios.forEach((radio) => {
+          radio.addEventListener("change", function () {
+            updateMaxPassengers();
+            saveFormData(); // Save when passenger count changes
+          });
+        });
+
+        // Initialize max passengers
+        updateMaxPassengers();
+
+        // Setup input validation
+        setupInputValidation();
+
+        // Load both accommodations and destinations
+        await loadAccommodations();
+        await loadDestinations();
+
+        // Setup auto-save and restore form data
+        setupAutoSave();
+        restoreFormData();
+      });
+    </script>
+  </body>
+</html>
