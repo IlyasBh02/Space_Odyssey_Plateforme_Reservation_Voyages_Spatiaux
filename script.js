@@ -26,3 +26,35 @@ function logout() {
 
 // Call this on page load
 document.addEventListener('DOMContentLoaded', updateNavigation);
+
+
+function updateAuthLinks() {
+            const session = localStorage.getItem('userSession');
+            const isLoggedIn = session && JSON.parse(session).isLoggedIn;
+            
+            if (!isLoggedIn) {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('login-link').classList.toggle('hidden', isLoggedIn);
+            document.getElementById('logout-link').classList.toggle('hidden', !isLoggedIn);
+            
+            if (isLoggedIn) {
+                const userData = JSON.parse(session);
+                document.getElementById('logout-link').innerHTML = `Logout (${userData.username})`;
+            }
+        }
+
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('userSession');
+            window.location.href = 'index.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            updateAuthLinks();
+            loadBookings();
+        });
