@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpaceVoyager Ticket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styles pour l'impression */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt;
+            }
+            
+            .ticket-container {
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                margin: 0 !important;
+                padding: 20px !important;
+                max-width: 100% !important;
+            }
+            
+            .print-header {
+                border-bottom: 3px double #000 !important;
+            }
+            
+            .section-border {
+                border: 1px solid #000 !important;
+            }
+            
+            .text-neon-blue {
+                color: #000 !important;
+            }
+            
+            .text-neon-cyan {
+                color: #000 !important;
+            }
+            
+            .bg-space-dark {
+                background: white !important;
+            }
+            
+            .booking-detail {
+                border-bottom: 1px dashed #ccc !important;
+                padding: 8px 0;
+            }
+        }
+
+        /* Styles normaux */
+        body {
+            background: linear-gradient(to bottom, #0a0a18, #1a1a2e, #16213e);
+            min-height: 100vh;
+        }
+        
+        .ticket-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 800px;
+            margin: 2rem auto;
+            overflow: hidden;
+        }
+        
+        .print-header {
+            background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .security-pattern {
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(14, 165, 233, 0.1) 10px,
+                rgba(14, 165, 233, 0.1) 20px
+            );
+        }
+        
+        .barcode {
+            font-family: 'Libre Barcode 128', cursive;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body class="font-exo">
+    <!-- Navigation pour retourner en arrière (cachée à l'impression) -->
+    <nav class="no-print bg-space-dark/80 backdrop-blur-md border-b border-neon-blue/20 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center">
+                    <i class="fas fa-rocket text-white"></i>
+                </div>
+                <a href="my-bookings.html" class="font-orbitron text-xl font-bold text-white">SpaceVoyager</a>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button onclick="window.print()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition-colors">
+                    <i class="fas fa-print mr-2"></i>Print Ticket
+                </button>
+                <button onclick="window.close()" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Close
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu du ticket -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="ticket-container">
+            <!-- En-tête du ticket -->
+            <div class="print-header">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-left">
+                        <h1 class="font-orbitron text-3xl font-bold">SPACEVOYAGER</h1>
+                        <p class="text-blue-100">Interplanetary Travel Ticket</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-orbitron">TICKET</div>
+                        <div class="text-blue-100" id="ticket-status">BOARDING PASS</div>
+                    </div>
+                </div>
+                
+                <div class="security-pattern py-2 rounded">
+                    <div class="barcode text-center" id="barcode">*${generateBarcode()}*</div>
+                </div>
+            </div>
+
+            <!-- Détails du voyage -->
+            <div class="p-8">
+                <!-- Section Informations de vol -->
+                <div class="mb-8 section-border p-6 rounded-lg">
+                    <h2 class="font-orbitron text-2xl text-neon-blue mb-4">Flight Information</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="booking-detail">
+                            <strong class="text-gray-600">Booking Reference:</strong>
+                            <div class="font-mono text-lg" id="booking-id">Loading...</div>
+                        </div>
+                        
+                        <div class="booking-detail">
+                            <strong class="text-gray-600">Flight Number:</strong>
+                            <div class="font-orbitron text-lg" id="flight-number">SV-001</div>
+                        </div>
+                        
+                        <div class="booking-detail">
+                            <strong class="text-gray-600">Destination:</strong>
+                            <div class="text-xl font-bold" id="destination">Loading...</div>
+                        </div>
+                        
+                        <div class="booking-detail">
+                            <strong class="text-gray-600">Departure Date:</strong>
+                            <div class="text-lg" id="departure-date">Loading...</div>
+                        </div>
+                        
+                        <div class="booking-detail">
+                            <strong class="text-gray-600">Accommodation:</strong>
+                            <div class="text-lg" id="accommodation">Loading...</div>
+                        </div>
+                        
+                        <div class="booking-detail">
+                            <strong class="text-gray-600">Total Price:</strong>
+                            <div class="text-2xl font-orbitron text-neon-cyan" id="total-price">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section Passagers -->
+                <div class="mb-8 section-border p-6 rounded-lg">
+                    <h2 class="font-orbitron text-2xl text-neon-blue mb-4">Passenger Details</h2>
+                    
+                    <div id="passengers-list">
+                        <!-- Les passagers seront ajoutés ici -->
+                    </div>
+                </div>
+
+                <!-- Section Instructions -->
+                <div class="section-border p-6 rounded-lg bg-yellow-50">
+                    <h2 class="font-orbitron text-xl text-neon-blue mb-3">Boarding Instructions</h2>
+                    
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-start">
+                            <i class="fas fa-clock mt-1 mr-3 text-neon-blue"></i>
+                            <span>Check-in opens 4 hours before departure at SpacePort Terminal</span>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-id-card mt-1 mr-3 text-neon-blue"></i>
+                            <span>Bring valid government-issued photo ID and this ticket</span>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-suitcase mt-1 mr-3 text-neon-blue"></i>
+                            <span>Maximum luggage: 25kg personal + 10kg cabin baggage</span>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <i class="fas fa-shield-alt mt-1 mr-3 text-neon-blue"></i>
+                            <span>Security screening and medical check required before boarding</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer du ticket -->
+                <div class="mt-8 pt-6 border-t border-gray-300 text-center text-gray-500 text-sm">
+                    <p>For assistance, contact SpaceVoyager Support: +1 (800) SPACE-TRIP | support@spacevoyager.com</p>
+                    <p class="mt-2">Ticket generated on <span id="generation-date"></span></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Générer un code-barres aléatoire
+        function generateBarcode() {
+            return Math.random().toString(36).substring(2, 15).toUpperCase();
+        }
+
+        // Charger les données du ticket
+        function loadTicketData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('id');
+            
+            if (!bookingId) {
+                alert('No booking ID provided');
+                window.location.href = 'my-bookings.html';
+                return;
+            }
+
+            const allBookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+            const booking = allBookings.find(b => b.id === bookingId);
+            
+            if (!booking) {
+                alert('Booking not found');
+                window.location.href = 'my-bookings.html';
+                return;
+            }
+
+            // Remplir les données du ticket
+            document.getElementById('booking-id').textContent = booking.id;
+            document.getElementById('destination').textContent = getDestinationName(booking.destination);
+            document.getElementById('departure-date').textContent = formatDate(booking.departureDate);
+            document.getElementById('accommodation').textContent = getPackageName(booking.accommodation);
+            document.getElementById('total-price').textContent = `$${booking.totalPrice?.toLocaleString() || '0'}`;
+            document.getElementById('flight-number').textContent = `SV-${booking.id.substring(3, 7)}`;
+            document.getElementById('generation-date').textContent = new Date().toLocaleDateString();
+
+            // Remplir les passagers
+            const passengersList = document.getElementById('passengers-list');
+            if (booking.passengers && booking.passengers.length > 0) {
+                passengersList.innerHTML = booking.passengers.map((passenger, index) => `
+                    <div class="booking-detail ${index < booking.passengers.length - 1 ? 'border-b border-gray-200 pb-4 mb-4' : ''}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <strong class="text-lg">${passenger.firstName} ${passenger.lastName}</strong>
+                                <div class="text-gray-600">${passenger.email} | ${passenger.phone}</div>
+                                ${passenger.specialRequirements ? `
+                                    <div class="text-sm text-red-600 mt-1">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        Special Requirements: ${passenger.specialRequirements}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="text-right">
+                                <div class="font-orbitron text-neon-blue">PASSENGER ${index + 1}</div>
+                                <div class="text-sm text-gray-500">${index === 0 ? 'PRIMARY' : 'SECONDARY'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Mettre à jour le code-barres avec l'ID de réservation
+            document.getElementById('barcode').textContent = `*${booking.id}*`;
+        }
+
+        // Fonctions helper
+        function getDestinationName(id) {
+            const destinations = {
+                'moon': 'The Moon',
+                'mars': 'Mars', 
+                'europa': 'Europa',
+                'titan': 'Titan',
+                'orbital-station': 'Orbital Station',
+                'venus-clouds': 'Venus Cloud Cities'
+            };
+            return destinations[id] || id;
+        }
+
+        function getPackageName(id) {
+            const packages = {
+                'standard': 'Standard Cabin',
+                'luxury': 'Luxury Suite', 
+                'zero-g': 'Zero-G Pod',
+                'family': 'Family Module',
+                'research': 'Research Suite',
+                'honeymoon': 'Honeymoon Suite'
+            };
+            return packages[id] || id;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Date not set';
+            try {
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        // Auto-impression optionnelle
+        function checkAutoPrint() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('print') === 'auto') {
+                setTimeout(() => {
+                    window.print();
+                }, 1000);
+            }
+        }
+
+        // Charger au démarrage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTicketData();
+            checkAutoPrint();
+        });
+    </script>
+</body>
+</html>
