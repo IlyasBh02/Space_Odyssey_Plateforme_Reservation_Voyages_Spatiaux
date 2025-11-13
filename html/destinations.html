@@ -128,7 +128,7 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+        <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 relative z-10">
         <!-- Page Header -->
         <section class="py-12 text-center">
@@ -138,175 +138,84 @@
             </p>
         </section>
 
+        <!-- 🔍 NOUVEAU : Search and Filters Section -->
+        <section class="mb-12">
+            <div class="bg-space-dark/50 backdrop-blur-md border border-neon-blue/20 rounded-2xl p-6">
+                <!-- Search Bar -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            placeholder="Search destinations by name, description, or type..."
+                            class="w-full p-4 pl-12 bg-space-dark border border-neon-blue/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-blue focus:ring-2 focus:ring-neon-blue/20"
+                        >
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Filters Row -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Type Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Type</label>
+                        <select id="type-filter" class="w-full p-3 bg-space-dark border border-neon-blue/30 rounded-lg text-white focus:outline-none focus:border-neon-blue">
+                            <option value="all">All Types</option>
+                            <option value="planet">Planets</option>
+                            <option value="moon">Moons</option>
+                            <option value="station">Stations</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">
+                            Max Price: $<span id="price-value">1,000,000</span>
+                        </label>
+                        <input 
+                            type="range" 
+                            id="price-filter" 
+                            min="0" 
+                            max="1000000" 
+                            value="1000000" 
+                            step="50000"
+                            class="w-full h-2 bg-space-dark rounded-lg appearance-none cursor-pointer slider"
+                        >
+                    </div>
+
+                    <!-- Duration Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Max Duration</label>
+                        <select id="duration-filter" class="w-full p-3 bg-space-dark border border-neon-blue/30 rounded-lg text-white focus:outline-none focus:border-neon-blue">
+                            <option value="any">Any Duration</option>
+                            <option value="1 week">Up to 1 week</option>
+                            <option value="1 month">Up to 1 month</option>
+                            <option value="1 year">Up to 1 year</option>
+                            <option value="5 years">Up to 5 years</option>
+                        </select>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <div class="flex items-end">
+                        <button 
+                            id="reset-filters"
+                            class="w-full px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-semibold"
+                        >
+                            Reset Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Count -->
+                <div class="mt-4 text-center">
+                    <p id="results-count" class="text-gray-300">Showing all destinations</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Destination Details -->
-        <section class="py-12">
-            <!-- Moon -->
-            <div class="planet-card p-8 mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div class="flex justify-center">
-                    <div class="w-64 h-64 rounded-full bg-gradient-to-r from-gray-400 to-gray-200 flex items-center justify-center glow">
-                        <i class="fas fa-moon text-gray-700 text-6xl"></i>
-                    </div>
-                </div>
-                <div>
-                    <h2 class="font-orbitron text-3xl mb-4 text-glow">The Moon</h2>
-                    <p class="text-gray-300 mb-4 text-lg">
-                        Earth's closest celestial neighbor offers low-gravity adventures, stunning views of our home planet, 
-                        and the historic Apollo landing sites. Experience lunar sunrises that are truly out of this world.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Journey Time</h4>
-                            <p class="text-gray-300">3 days</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Gravity</h4>
-                            <p class="text-gray-300">16.6% of Earth</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Temperature</h4>
-                            <p class="text-gray-300">-173°C to 127°C</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Atmosphere</h4>
-                            <p class="text-gray-300">Trace</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="booking.html" class="btn-primary text-white px-6 py-3 rounded-lg font-bold text-center">
-                            Book Moon Journey
-                        </a>
-                        <a href="#" class="border border-neon-blue text-neon-blue px-6 py-3 rounded-lg font-bold text-center hover:bg-neon-blue/10 transition-colors">
-                            View Gallery
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Mars -->
-            <div class="planet-card p-8 mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div class="lg:order-2 flex justify-center">
-                    <div class="w-64 h-64 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center glow">
-                        <i class="fas fa-globe-americas text-white text-6xl"></i>
-                    </div>
-                </div>
-                <div class="lg:order-1">
-                    <h2 class="font-orbitron text-3xl mb-4 text-glow">Mars</h2>
-                    <p class="text-gray-300 mb-4 text-lg">
-                        The Red Planet awaits with its massive canyons, towering volcanoes, and mysterious past. 
-                        Explore the Valles Marineris canyon system and witness spectacular sunsets in blue.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Journey Time</h4>
-                            <p class="text-gray-300">7-9 months</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Gravity</h4>
-                            <p class="text-gray-300">38% of Earth</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Temperature</h4>
-                            <p class="text-gray-300">-87°C to -5°C</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Atmosphere</h4>
-                            <p class="text-gray-300">Thin CO₂</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="booking.html" class="btn-primary text-white px-6 py-3 rounded-lg font-bold text-center">
-                            Book Mars Journey
-                        </a>
-                        <a href="#" class="border border-neon-blue text-neon-blue px-6 py-3 rounded-lg font-bold text-center hover:bg-neon-blue/10 transition-colors">
-                            View Gallery
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Europa -->
-            <div class="planet-card p-8 mb-12 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div class="flex justify-center">
-                    <div class="w-64 h-64 rounded-full bg-gradient-to-r from-blue-300 to-blue-500 flex items-center justify-center glow">
-                        <i class="fas fa-snowflake text-white text-6xl"></i>
-                    </div>
-                </div>
-                <div>
-                    <h2 class="font-orbitron text-3xl mb-4 text-glow">Europa</h2>
-                    <p class="text-gray-300 mb-4 text-lg">
-                        Jupiter's icy moon hides a vast subsurface ocean that may harbor life. 
-                        Witness incredible ice formations and experience the powerful radiation belts of Jupiter.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Journey Time</h4>
-                            <p class="text-gray-300">5-6 years</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Gravity</h4>
-                            <p class="text-gray-300">13% of Earth</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Temperature</h4>
-                            <p class="text-gray-300">-160°C</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Surface</h4>
-                            <p class="text-gray-300">Ice crust</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="booking.html" class="btn-primary text-white px-6 py-3 rounded-lg font-bold text-center">
-                            Book Europa Journey
-                        </a>
-                        <a href="#" class="border border-neon-blue text-neon-blue px-6 py-3 rounded-lg font-bold text-center hover:bg-neon-blue/10 transition-colors">
-                            View Gallery
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Titan -->
-            <div class="planet-card p-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div class="lg:order-2 flex justify-center">
-                    <div class="w-64 h-64 rounded-full bg-gradient-to-r from-orange-400 to-yellow-500 flex items-center justify-center glow">
-                        <i class="fas fa-ring text-white text-6xl"></i>
-                    </div>
-                </div>
-                <div class="lg:order-1">
-                    <h2 class="font-orbitron text-3xl mb-4 text-glow">Titan</h2>
-                    <p class="text-gray-300 mb-4 text-lg">
-                        Saturn's largest moon features thick atmosphere, methane lakes, and complex organic chemistry. 
-                        Experience the only other body in our solar system with stable liquid on its surface.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Journey Time</h4>
-                            <p class="text-gray-300">7 years</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Gravity</h4>
-                            <p class="text-gray-300">14% of Earth</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Temperature</h4>
-                            <p class="text-gray-300">-179°C</p>
-                        </div>
-                        <div class="bg-space-purple/50 p-4 rounded-lg">
-                            <h4 class="font-orbitron text-neon-blue mb-2">Atmosphere</h4>
-                            <p class="text-gray-300">Thick nitrogen</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="booking.html" class="btn-primary text-white px-6 py-3 rounded-lg font-bold text-center">
-                            Book Titan Journey
-                        </a>
-                        <a href="#" class="border border-neon-blue text-neon-blue px-6 py-3 rounded-lg font-bold text-center hover:bg-neon-blue/10 transition-colors">
-                            View Gallery
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <section class="py-12" id="destinations-container">
+            <!-- Les destinations seront chargées dynamiquement ici -->
         </section>
     </main>
 
