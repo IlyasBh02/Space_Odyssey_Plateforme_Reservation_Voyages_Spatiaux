@@ -22,27 +22,34 @@
         else window.location.href = 'index.html';
     }
 
-    // Minimal nav initializer: hides login link and injects logout
+    // Minimal nav initializer: hides login button and injects logout button with styling
     function initAuthNav() {
         const session = getUserSession();
-        const loginLink = document.getElementById('login-link') || document.querySelector('nav a[href*="login.html"]');
-        if (!loginLink) return;
+        const authContainer = document.getElementById('auth-buttons');
+        if (!authContainer) return;
 
-        // Remove any previous logout we created
-        const existing = document.getElementById('logout-link');
-        if (existing) existing.remove();
+        // Clear any previous buttons
+        authContainer.innerHTML = '';
 
         if (session && session.isLoggedIn) {
-            loginLink.style.display = 'none';
-            const a = document.createElement('a');
-            a.href = '#';
-            a.id = 'logout-link';
-            a.className = loginLink.className;
-            a.textContent = `Logout (${session.name})`;
-            a.addEventListener('click', function(e){ e.preventDefault(); logout(); });
-            loginLink.parentNode.insertBefore(a, loginLink.nextSibling);
+            // Show logout button
+            const logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logout-link';
+            logoutBtn.textContent = `Logout (${session.name})`;
+            logoutBtn.className = 'px-4 py-2 rounded-lg font-bold bg-red-600 hover:bg-red-700 transition-colors text-white';
+            logoutBtn.addEventListener('click', function(e){ e.preventDefault(); logout(); });
+            authContainer.appendChild(logoutBtn);
         } else {
-            loginLink.style.display = '';
+            // Show login button
+            const loginBtn = document.createElement('button');
+            loginBtn.id = 'login-link';
+            loginBtn.textContent = 'Login';
+            loginBtn.className = 'px-4 py-2 rounded-lg font-bold bg-gradient-to-r from-neon-blue to-neon-purple hover:opacity-90 transition-opacity text-white';
+            loginBtn.addEventListener('click', function(){ 
+                const loginUrl = (location.pathname.includes('/html/') ? 'login.html' : 'html/login.html');
+                window.location.href = loginUrl; 
+            });
+            authContainer.appendChild(loginBtn);
         }
     }
 
