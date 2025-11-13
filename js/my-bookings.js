@@ -1,7 +1,30 @@
-// Simple and clean my-bookings logic
+// Complete my-bookings.js with all required functions
+function createStars() {
+    const container = document.getElementById('stars-container');
+    if (!container) return;
+    
+    const starCount = 150;
+    container.innerHTML = '';
+    
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.animationDelay = `${Math.random() * 5}s`;
+        
+        container.appendChild(star);
+    }
+}
+
 function loadBookings() {
     // Check if user is logged in
-    const session = getUserSession();
+    const session = getUserSession ? getUserSession() : JSON.parse(localStorage.getItem('userSession') || 'null');
+    
     if (!session || !session.isLoggedIn) {
         window.location.href = 'login.html';
         return;
@@ -9,12 +32,17 @@ function loadBookings() {
 
     // Get all bookings
     const allBookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+    console.log('All bookings from storage:', allBookings);
+    console.log('Current user session:', session);
     
     // SIMPLE FILTER: Get current user's bookings
-    const userBookings = allBookings.filter(booking => 
-        booking.userId === session.userId || booking.email === session.email
-    );
+    const userBookings = allBookings.filter(booking => {
+        const matches = booking.userId === session.userId || booking.email === session.email;
+        console.log('Booking match check:', booking, matches);
+        return matches;
+    });
 
+    console.log('Filtered user bookings:', userBookings);
     displayBookings(userBookings);
 }
 
@@ -22,22 +50,24 @@ function displayBookings(bookings) {
     const container = document.getElementById('bookings-container');
     const noBookings = document.getElementById('no-bookings');
 
-    if (bookings.length === 0) {
-        container.classList.add('hidden');
-        noBookings.classList.remove('hidden');
+    if (!bookings || bookings.length === 0) {
+        if (container) container.classList.add('hidden');
+        if (noBookings) noBookings.classList.remove('hidden');
         return;
     }
 
-    container.classList.remove('hidden');
-    noBookings.classList.add('hidden');
-    container.innerHTML = '';
+    if (container) {
+        container.classList.remove('hidden');
+        container.innerHTML = '';
+    }
+    if (noBookings) noBookings.classList.add('hidden');
 
     // Show newest bookings first
-    bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    bookings.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
 
     bookings.forEach(booking => {
         const card = createBookingCard(booking);
-        container.appendChild(card);
+        if (container) container.appendChild(card);
     });
 }
 
@@ -49,12 +79,12 @@ function createBookingCard(booking) {
         <div class="flex justify-between items-start mb-4">
             <div>
                 <h3 class="font-orbitron text-xl text-neon-blue">${getDestinationName(booking.destination)}</h3>
-                <p class="text-gray-400">Booking ID: ${booking.id}</p>
+                <p class="text-gray-400">Booking ID: ${booking.id || 'N/A'}</p>
                 <span class="inline-block bg-green-500/20 text-green-400 text-sm px-3 py-1 rounded-full mt-2">
                     ${booking.status || 'Confirmed'}
                 </span>
             </div>
-            <span class="text-neon-cyan font-bold text-xl">${booking.totalPrice || 'Price not set'}</span>
+            <span class="text-neon-cyan font-bold text-xl">${booking.totalPrice || booking.price || 'Price not set'}</span>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
@@ -73,13 +103,13 @@ function createBookingCard(booking) {
         </div>
         
         <div class="flex flex-wrap gap-3">
-            <button onclick="viewTicket('${booking.id}')" class="action-btn bg-neon-blue">
+            <button onclick="viewTicket('${booking.id}')" class="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                 <i class="fas fa-ticket-alt mr-2"></i>View Ticket
             </button>
-            <button onclick="editBooking('${booking.id}')" class="action-btn bg-green-600">
+            <button onclick="editBooking('${booking.id}')" class="px-4 py-2 rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
                 <i class="fas fa-edit mr-2"></i>Edit
             </button>
-            <button onclick="cancelBooking('${booking.id}')" class="action-btn bg-red-600">
+            <button onclick="cancelBooking('${booking.id}')" class="px-4 py-2 rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
                 <i class="fas fa-times mr-2"></i>Cancel
             </button>
         </div>
@@ -114,7 +144,12 @@ function getPackageName(id) {
 }
 
 function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString();
+    if (!dateString) return 'Date not set';
+    try {
+        return new Date(dateString).toLocaleDateString();
+    } catch (e) {
+        return dateString;
+    }
 }
 
 // Action functions
@@ -137,21 +172,9 @@ function cancelBooking(bookingId) {
     }
 }
 
-// Debug function to check what's in localStorage
-function debugBookings() {
-    const all = JSON.parse(localStorage.getItem('userBookings') || '[]');
-    const session = getUserSession();
-    console.log('All bookings:', all);
-    console.log('User session:', session);
-    console.log('Filtered bookings:', all.filter(b => 
-        b.userId === session.userId || b.email === session.email
-    ));
-}
-
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     createStars();
     if (typeof initAuthNav === 'function') initAuthNav();
     loadBookings();
-    debugBookings(); // Add this temporarily to debug
 });
