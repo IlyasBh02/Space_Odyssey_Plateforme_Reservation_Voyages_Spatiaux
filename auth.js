@@ -31,6 +31,20 @@
         // Clear any previous buttons
         authContainer.innerHTML = '';
 
+        // Show or hide existing "My Bookings" links depending on session (do not create duplicates)
+        try {
+            const mbLinks = Array.from(document.querySelectorAll('a[href*="my-bookings.html"]'));
+            mbLinks.forEach(a => {
+                if (session && session.isLoggedIn) {
+                    a.style.display = '';
+                } else {
+                    a.style.display = 'none';
+                }
+            });
+        } catch (e) {
+            // silent
+        }
+
         if (session && session.isLoggedIn) {
             // Show logout button
             const logoutBtn = document.createElement('button');
