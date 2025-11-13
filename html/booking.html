@@ -892,16 +892,62 @@
         return isValid;
       }
 
-      // Form submission
+      // Form submission — require login before confirming booking and save booking to localStorage
       document
         .getElementById("booking-form")
         .addEventListener("submit", function (e) {
           e.preventDefault();
 
+          // Ensure user is logged in
+          let session = null;
+          try {
+            session = (typeof getUserSession === 'function') ? getUserSession() : JSON.parse(localStorage.getItem('userSession') || 'null');
+          } catch (err) {
+            session = null;
+          }
+
+          if (!session || !session.isLoggedIn) {
+            // Save form data (page already auto-saves) and redirect to login
+            window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+            return;
+          }
+
           if (validateForm()) {
-            alert(
-              "Thank you for your booking! We will contact you shortly to confirm your space journey."
-            );
+            // gather booking data
+            const destination = document.getElementById('destination').value;
+            const departureDate = document.getElementById('departure-date').value;
+            const accommodation = document.getElementById('accommodation').value;
+
+            const passengerForms = document.querySelectorAll('.passenger-form');
+            const passengers = [];
+            passengerForms.forEach((form) => {
+              passengers.push({
+                firstName: form.querySelector('input[name="first-name[]"]').value || '',
+                lastName: form.querySelector('input[name="last-name[]"]').value || '',
+                email: form.querySelector('input[name="email[]"]').value || '',
+                phone: form.querySelector('input[name="phone[]"]').value || '',
+                specialRequirements: form.querySelector('textarea[name="special-requirements[]"]')?.value || ''
+              });
+            });
+
+            const allBookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+            const booking = {
+              id: 'bk_' + Date.now(),
+              userId: session.userId || session.email,
+              userName: session.name || session.email,
+              destination,
+              departureDate,
+              accommodation,
+              passengers,
+              timestamp: new Date().toISOString(),
+            };
+
+            allBookings.push(booking);
+            localStorage.setItem('userBookings', JSON.stringify(allBookings));
+
+            // Clear saved form data and redirect to My Bookings
+            clearFormData();
+            window.location.href = 'my-bookings.html';
           }
         });
 
@@ -1315,6 +1361,18 @@
 
       // Initialize on page load
       document.addEventListener("DOMContentLoaded", async function () {
+        // Require login to view booking page: redirect to login with return URL if not logged in
+        try {
+          const session = (typeof getUserSession === 'function') ? getUserSession() : JSON.parse(localStorage.getItem('userSession') || 'null');
+          if (!session || !session.isLoggedIn) {
+            window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+            return;
+          }
+        } catch (e) {
+          window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+          return;
+        }
+
         createStars();
 
         // Setup passenger selection change
