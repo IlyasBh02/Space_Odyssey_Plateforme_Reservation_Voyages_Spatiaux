@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../auth.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -277,62 +278,89 @@
             }
         }
 
-        // Check user credentials
+        // Check user credentials (separate email existence and password checks)
         async function checkUser(email, password) {
             try {
                 const response = await fetch('../users.json');
                 const data = await response.json();
-                
-                // Find user with matching email and password
-                const user = data.users.find(u => u.email === email && u.password === password);
-                return user;
-                
+
+                const userByEmail = data.users.find(u => u.email === email);
+                if (!userByEmail) return { status: 'not_found' };
+                if (userByEmail.password !== password) return { status: 'invalid_password' };
+                return { status: 'ok', user: userByEmail };
+
             } catch (error) {
-                console.log('Error loading users file');
-                return null;
+                console.log('Error loading users file', error);
+                return { status: 'error' };
             }
         }
 
         // Login form submission
         document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value;
+
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const errorElement = document.getElementById('login-error');
-            
+
             // Clear previous error
             errorElement.style.display = 'none';
-            
-            const user = await checkUser(email, password);
-            
-            if (user) {
-                // Save user session
-                const userSession = {
-                    isLoggedIn: true,
-                    userId: user.id,
-                    name: user.name,
-                    email: user.email,
-                    loginTime: new Date().toISOString()
-                };
-                
-                localStorage.setItem('userSession', JSON.stringify(userSession));
-                
-                // Redirect to home
-                window.location.href = '../index.html';
-                
+
+            const result = await checkUser(email, password);
+
+            if (result.status === 'ok') {
+                // Save session via auth helper
+                try {
+                    setUserSession(result.user);
+                } catch (e) {
+                    // fallback
+                    const userSession = {
+                        isLoggedIn: true,
+                        userId: result.user.id,
+                        name: result.user.name,
+                        email: result.user.email,
+                        loginTime: new Date().toISOString()
+                    };
+                    localStorage.setItem('userSession', JSON.stringify(userSession));
+                }
+
+                // Redirect to requested page or home
+                const params = new URLSearchParams(window.location.search);
+                const redirect = params.get('redirect');
+                if (redirect) {
+                    try { window.location.href = decodeURIComponent(redirect); } catch(e){ window.location.href = '../index.html'; }
+                } else {
+                    window.location.href = '../index.html';
+                }
+
             } else {
+                let msg = 'An error occurred. Please try again.';
+                if (result.status === 'not_found') msg = 'Email not registered';
+                else if (result.status === 'invalid_password') msg = 'Invalid password';
+                else if (result.status === 'error') msg = 'Unable to contact server';
+
+                errorElement.textContent = msg;
                 errorElement.style.display = 'block';
             }
         });
 
-        // Check if user is already logged in
+        // Page init
         document.addEventListener('DOMContentLoaded', function() {
             createStars();
-            
-            const session = localStorage.getItem('userSession');
-            if (session && JSON.parse(session).isLoggedIn) {
-                window.location.href = '../index.html';
+
+            try {
+                const session = (typeof getUserSession === 'function') ? getUserSession() : JSON.parse(localStorage.getItem('userSession') || 'null');
+                if (session && session.isLoggedIn) {
+                    const params = new URLSearchParams(window.location.search);
+                    const redirect = params.get('redirect');
+                    if (redirect) {
+                        try { window.location.href = decodeURIComponent(redirect); } catch(e){ window.location.href = '../index.html'; }
+                    } else {
+                        window.location.href = '../index.html';
+                    }
+                }
+            } catch (e) {
+                // ignore
             }
         });
     </script>
