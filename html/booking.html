@@ -497,6 +497,82 @@
             </div>
           </div>
 
+
+          <!-- Optional Extras -->
+    <div class="mb-6">
+        <label class="block mb-3 text-gray-300">Optional Extras</label>
+        <div class="space-y-3" id="extras-container">
+            <label class="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-space-dark/50 transition-colors">
+                <input type="checkbox" name="extras" value="insurance" data-price="1000" class="w-5 h-5">
+                <div class="flex-1">
+                    <span class="font-semibold">Space Travel Insurance</span>
+                    <p class="text-sm text-gray-400">Comprehensive coverage for your journey</p>
+                </div>
+                <span class="text-neon-cyan font-bold">+$1,000</span>
+            </label>
+            
+            <label class="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-space-dark/50 transition-colors">
+                <input type="checkbox" name="extras" value="photo" data-price="500" class="w-5 h-5">
+                <div class="flex-1">
+                    <span class="font-semibold">Professional Photo Pack</span>
+                    <p class="text-sm text-gray-400">High-quality photos of your space experience</p>
+                </div>
+                <span class="text-neon-cyan font-bold">+$500</span>
+            </label>
+            
+            <label class="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-space-dark/50 transition-colors">
+                <input type="checkbox" name="extras" value="training" data-price="2000" class="w-5 h-5">
+                <div class="flex-1">
+                    <span class="font-semibold">VIP Pre-flight Training</span>
+                    <p class="text-sm text-gray-400">Advanced preparation with our experts</p>
+                </div>
+                <span class="text-neon-cyan font-bold">+$2,000</span>
+            </label>
+            
+            <label class="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-space-dark/50 transition-colors">
+                <input type="checkbox" name="extras" value="souvenir" data-price="300" class="w-5 h-5">
+                <div class="flex-1">
+                    <span class="font-semibold">Official Space Souvenir Pack</span>
+                    <p class="text-sm text-gray-400">Memorabilia from your journey</p>
+                </div>
+                <span class="text-neon-cyan font-bold">+$300</span>
+            </label>
+        </div>
+    </div>
+
+<!-- Price Summary -->
+<div class="mb-8 p-6 bg-space-dark/50 rounded-lg border border-neon-blue/20">
+    <h3 class="font-orbitron text-xl mb-4 text-neon-blue">Price Summary</h3>
+    
+    <div id="price-breakdown" class="space-y-2 text-sm mb-4">
+        <div class="flex justify-between">
+            <span class="text-gray-400">Base price:</span>
+            <span id="base-price">$0</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-gray-400">Accommodation:</span>
+            <span id="accommodation-price">$0</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="text-gray-400">Passengers:</span>
+            <span id="passengers-count">1 × $0</span>
+        </div>
+        <div id="extras-breakdown" class="space-y-1">
+            <!-- Extras will be listed here -->
+        </div>
+    </div>
+    
+    <div class="border-t border-neon-blue/20 pt-4">
+        <div class="flex justify-between items-center">
+            <span class="font-orbitron text-lg">Total:</span>
+            <span id="total-price" class="font-orbitron text-2xl text-neon-cyan">$0</span>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="totalPrice" name="totalPrice">
+
+
           <!-- Personal Information Section -->
           <div class="mb-8">
             <h2 class="font-orbitron text-2xl mb-6">Personal Information</h2>
