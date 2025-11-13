@@ -1,4 +1,4 @@
-// Minimal authentication helper
+// Minimal authentication helper - FIXED VERSION
 (function(){
     function getUserSession() {
         try { return JSON.parse(localStorage.getItem('userSession') || 'null'); }
@@ -19,7 +19,6 @@
         window.location.href = 'index.html';
     }
 
-    // Simple nav initializer - just shows My Bookings when logged in
     function initAuthNav() {
         const session = getUserSession();
         const authContainer = document.getElementById('auth-buttons');
@@ -28,19 +27,20 @@
         authContainer.innerHTML = '';
 
         if (session && session.isLoggedIn) {
-            // Create My Bookings link
-            const bookingsLink = document.createElement('a');
-            bookingsLink.href = 'my-bookings.html';
-            bookingsLink.textContent = 'My Bookings';
-            bookingsLink.className = 'px-4 py-2 text-white hover:text-gray-300';
+            // Only create My Bookings link if we're NOT on the My Bookings page
+            if (!window.location.pathname.includes('my-bookings.html')) {
+                const bookingsLink = document.createElement('a');
+                bookingsLink.href = 'my-bookings.html';
+                bookingsLink.textContent = 'My Bookings';
+                bookingsLink.className = 'px-4 py-2 text-white hover:text-gray-300';
+                authContainer.appendChild(bookingsLink);
+            }
             
             // Create logout button
             const logoutBtn = document.createElement('button');
             logoutBtn.textContent = `Logout (${session.name})`;
             logoutBtn.className = 'px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white';
             logoutBtn.addEventListener('click', logout);
-            
-            authContainer.appendChild(bookingsLink);
             authContainer.appendChild(logoutBtn);
         } else {
             // Show login button
