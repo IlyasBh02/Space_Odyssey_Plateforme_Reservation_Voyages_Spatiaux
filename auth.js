@@ -1,5 +1,4 @@
-// Minimal authentication helper (simple and readable)
-// Exposes: setUserSession(user), getUserSession(), clearUserSession(), initAuthNav(), logout()
+// Minimal authentication helper
 (function(){
     function getUserSession() {
         try { return JSON.parse(localStorage.getItem('userSession') || 'null'); }
@@ -17,51 +16,39 @@
 
     function logout() {
         clearUserSession();
-        // simple redirect to project root index
-        if (location.pathname.includes('/html/')) window.location.href = '../index.html';
-        else window.location.href = 'index.html';
+        window.location.href = 'index.html';
     }
 
-    // Minimal nav initializer: hides login button and injects logout button with styling
+    // Simple nav initializer - just shows My Bookings when logged in
     function initAuthNav() {
         const session = getUserSession();
         const authContainer = document.getElementById('auth-buttons');
         if (!authContainer) return;
 
-        // Clear any previous buttons
         authContainer.innerHTML = '';
 
-        // Show or hide existing "My Bookings" links depending on session (do not create duplicates)
-        try {
-            const mbLinks = Array.from(document.querySelectorAll('a[href*="my-bookings.html"]'));
-            mbLinks.forEach(a => {
-                if (session && session.isLoggedIn) {
-                    a.style.display = '';
-                } else {
-                    a.style.display = 'none';
-                }
-            });
-        } catch (e) {
-            // silent
-        }
-
         if (session && session.isLoggedIn) {
-            // Show logout button
+            // Create My Bookings link
+            const bookingsLink = document.createElement('a');
+            bookingsLink.href = 'my-bookings.html';
+            bookingsLink.textContent = 'My Bookings';
+            bookingsLink.className = 'px-4 py-2 text-white hover:text-gray-300';
+            
+            // Create logout button
             const logoutBtn = document.createElement('button');
-            logoutBtn.id = 'logout-link';
             logoutBtn.textContent = `Logout (${session.name})`;
-            logoutBtn.className = 'px-4 py-2 rounded-lg font-bold bg-red-600 hover:bg-red-700 transition-colors text-white';
-            logoutBtn.addEventListener('click', function(e){ e.preventDefault(); logout(); });
+            logoutBtn.className = 'px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white';
+            logoutBtn.addEventListener('click', logout);
+            
+            authContainer.appendChild(bookingsLink);
             authContainer.appendChild(logoutBtn);
         } else {
             // Show login button
             const loginBtn = document.createElement('button');
-            loginBtn.id = 'login-link';
             loginBtn.textContent = 'Login';
-            loginBtn.className = 'px-4 py-2 rounded-lg font-bold bg-gradient-to-r from-neon-blue to-neon-purple hover:opacity-90 transition-opacity text-white';
+            loginBtn.className = 'px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white';
             loginBtn.addEventListener('click', function(){ 
-                const loginUrl = (location.pathname.includes('/html/') ? 'login.html' : 'html/login.html');
-                window.location.href = loginUrl; 
+                window.location.href = 'login.html'; 
             });
             authContainer.appendChild(loginBtn);
         }
