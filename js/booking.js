@@ -9,89 +9,31 @@ let currentPrices = {
     extras: 0
 };
 
-// 1. INITIALISATION - PAS de vérification d'authentification pour l'accès
+// 1. INITIALISATION
 function initializePage() {
     console.log("🚀 Initialisation page booking...");
+    
+    if (!checkAuthentication()) return;
     
     createStarsBackground();
     setupMobileNavigation();
     setupBasicEventListeners();
     
     loadAllData();
-    updateBookingButtonState(); // Mettre à jour l'état du bouton
-    setupAuthMonitoring(); // Surveiller les changements de connexion
 }
 
 function checkAuthentication() {
     try {
-        const session = (typeof getUserSession === 'function') 
-            ? getUserSession() 
-            : JSON.parse(localStorage.getItem('userSession') || 'null');
-        return !!(session && session.isLoggedIn);
+        const session = (typeof getUserSession === 'function') ? getUserSession() : JSON.parse(localStorage.getItem('userSession') || 'null');
+        if (!session || !session.isLoggedIn) {
+            window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+            return false;
+        }
+        return true;
     } catch (e) {
+        window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
         return false;
     }
-}
-
-// 2. METTRE À JOUR L'ÉTAT DU BOUTON DE RÉSERVATION
-function updateBookingButtonState() {
-    const submitButton = document.querySelector('#booking-form button[type="submit"]');
-    
-    const isLoggedIn = checkAuthentication();
-    
-    if (submitButton) {
-        if (isLoggedIn) {
-            // Utilisateur connecté - bouton actif
-            submitButton.innerHTML = '<i class="fas fa-rocket mr-2"></i>Confirm Booking';
-            submitButton.disabled = false;
-            submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
-            submitButton.classList.add('hover:bg-neon-cyan', 'cursor-pointer');
-        } else {
-            // Utilisateur non connecté - bouton désactivé
-            submitButton.innerHTML = '<i class="fas fa-lock mr-2"></i>Login to Book';
-            submitButton.disabled = true;
-            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
-            submitButton.classList.remove('hover:bg-neon-cyan', 'cursor-pointer');
-        }
-    }
-}
-
-// 3. MONITORER LES CHANGEMENTS DE CONNEXION
-function setupAuthMonitoring() {
-    // Vérifier l'état de connexion périodiquement
-    setInterval(updateBookingButtonState, 2000);
-    
-    // Écouter les événements de stockage (connexion/déconnexion depuis d'autres onglets)
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'userSession') {
-            updateBookingButtonState();
-        }
-    });
-}
-
-// 4. GESTION DE LA SOUMISSION AVEC REDIRECTION SI NON CONNECTÉ
-function handleFormSubmission(event) {
-    event.preventDefault();
-    
-    // Vérifier si l'utilisateur est connecté
-    if (!checkAuthentication()) {
-        // Rediriger vers la page de connexion avec retour vers cette page
-        const currentUrl = window.location.href;
-        window.location.href = `login.html?redirect=${encodeURIComponent(currentUrl)}`;
-        return;
-    }
-    
-    // Si connecté, valider et traiter la réservation
-    if (!validateFullForm()) {
-        alert('Please correct the errors in the form before submitting.');
-        return;
-    }
-    
-    const session = (typeof getUserSession === 'function') 
-        ? getUserSession() 
-        : JSON.parse(localStorage.getItem('userSession') || 'null');
-    
-    saveBooking(session);
 }
 
 function createStarsBackground() {
@@ -128,22 +70,14 @@ function setupMobileNavigation() {
 }
 
 function setupBasicEventListeners() {
-    const bookingForm = document.getElementById("booking-form");
-    const addPassengerBtn = document.getElementById("add-passenger-btn");
-    
-    if (bookingForm) {
-        bookingForm.addEventListener("submit", handleFormSubmission);
-    }
-    
-    if (addPassengerBtn) {
-        addPassengerBtn.addEventListener("click", addPassengerForm);
-    }
+    document.getElementById("booking-form").addEventListener("submit", handleFormSubmission);
+    document.getElementById("add-passenger-btn").addEventListener("click", addPassengerForm);
     
     setupPassengerTypeListeners();
     setupPriceCalculationListeners();
 }
 
-// 5. CHARGEMENT DES DONNÉES
+// 2. CHARGEMENT DES DONNÉES
 async function loadAllData() {
     try {
         await Promise.all([
@@ -190,6 +124,7 @@ async function loadAccommodations() {
 function loadFallbackData() {
     console.log("🔄 Chargement des données de secours...");
     
+    // Destinations de secours
     destinationsData = [
         {
             id: "moon",
@@ -217,6 +152,7 @@ function loadFallbackData() {
         }
     ];
     
+    // Accommodations de secours
     accommodationsData = [
         {
             id: "standard",
@@ -247,7 +183,7 @@ function loadFallbackData() {
     populateDestinationSelect();
 }
 
-// 6. DESTINATIONS
+// 3. DESTINATIONS - CODE CRITIQUE
 function populateDestinationSelect() {
     const destinationSelect = document.getElementById("destination");
     if (!destinationSelect) {
@@ -255,10 +191,12 @@ function populateDestinationSelect() {
         return;
     }
 
+    // Vider options existantes (sauf première)
     while (destinationSelect.children.length > 1) {
         destinationSelect.removeChild(destinationSelect.lastChild);
     }
 
+    // Ajouter destinations
     destinationsData.forEach((dest) => {
         const option = document.createElement("option");
         option.value = dest.id;
@@ -269,6 +207,7 @@ function populateDestinationSelect() {
 
     console.log(`✅ ${destinationsData.length} destinations ajoutées`);
 
+    // ÉCOUTEUR DIRECT COMME VOTRE ANCIEN CODE
     destinationSelect.addEventListener("change", function () {
         const selectedOption = this.options[this.selectedIndex];
         const destinationInfo = document.getElementById("destination-info");
@@ -277,6 +216,7 @@ function populateDestinationSelect() {
         if (selectedOption.value) {
             const dest = JSON.parse(selectedOption.getAttribute("data-destination"));
 
+            // Afficher info destination
             document.getElementById("destination-name").textContent = dest.name;
             document.getElementById("destination-description").textContent = dest.description;
             document.getElementById("destination-duration").textContent = dest.travelDuration;
@@ -364,7 +304,7 @@ function setupAccommodationCardSelection() {
     });
 }
 
-// 7. GESTION DES PASSAGERS
+// 4. GESTION DES PASSAGERS
 function setupPassengerTypeListeners() {
     const passengerRadios = document.querySelectorAll('input[name="passengers"]');
     
@@ -534,7 +474,7 @@ function showMaxPassengersModal() {
     alert(`Maximum number of passengers reached (${maxPassengers}) for ${getSelectedPassengerType()} travel.`);
 }
 
-// 8. CALCUL DES PRIX
+// 5. CALCUL DES PRIX
 function setupPriceCalculationListeners() {
     document.querySelectorAll('input[name="extras"]').forEach(checkbox => {
         checkbox.addEventListener('change', updatePriceCalculation);
@@ -609,7 +549,7 @@ function updatePriceDisplay(basePrice, passengerCount, finalTotal) {
     if (totalPriceElement) totalPriceElement.textContent = `$${finalTotal.toLocaleString()}`;
 }
 
-// 9. VALIDATION
+// 6. VALIDATION
 function setupInputValidation() {
     const validatedInputs = document.querySelectorAll('input[data-validation]');
     
@@ -705,6 +645,7 @@ function clearInputError(input) {
 function validateFullForm() {
     let isValid = true;
     
+    // Champs principaux
     const mainFields = [
         { id: 'destination', message: 'Please select a destination' },
         { id: 'departure-date', message: 'Please select a departure date' },
@@ -721,6 +662,7 @@ function validateFullForm() {
         }
     });
     
+    // Validation date
     const departureDate = document.getElementById('departure-date');
     if (departureDate && departureDate.value) {
         const selectedDate = new Date(departureDate.value);
@@ -733,6 +675,7 @@ function validateFullForm() {
         }
     }
     
+    // Validation passagers
     const passengerForms = document.querySelectorAll('.passenger-form');
     passengerForms.forEach(form => {
         const inputs = form.querySelectorAll('input[data-validation]');
@@ -762,7 +705,24 @@ function clearError(errorId) {
     }
 }
 
-// 10. SAUVEGARDE DE LA RÉSERVATION
+// 7. SOUMISSION DU FORMULAIRE
+function handleFormSubmission(event) {
+    event.preventDefault();
+    
+    if (!validateFullForm()) {
+        alert('Please correct the errors in the form before submitting.');
+        return;
+    }
+    
+    const session = (typeof getUserSession === 'function') ? getUserSession() : JSON.parse(localStorage.getItem('userSession') || 'null');
+    if (!session || !session.isLoggedIn) {
+        window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+        return;
+    }
+    
+    saveBooking(session);
+}
+
 function saveBooking(userSession) {
     const bookingData = collectBookingData(userSession);
     
@@ -771,7 +731,10 @@ function saveBooking(userSession) {
     localStorage.setItem('userBookings', JSON.stringify(allBookings));
     
     clearFormData();
-    showBookingConfirmation(bookingData);
+    alert('Booking confirmed successfully!');
+    setTimeout(() => {
+        window.location.href = 'my-bookings.html';
+    }, 1500);
 }
 
 function collectBookingData(session) {
@@ -780,6 +743,7 @@ function collectBookingData(session) {
     const accommodation = document.getElementById('accommodation').value;
     const totalPrice = document.getElementById('totalPrice').value;
     
+    // Données passagers
     const passengers = [];
     document.querySelectorAll('.passenger-form').forEach(form => {
         passengers.push({
@@ -791,6 +755,7 @@ function collectBookingData(session) {
         });
     });
     
+    // Extras
     const selectedExtras = [];
     document.querySelectorAll('input[name="extras"]:checked').forEach(extra => {
         selectedExtras.push({
@@ -815,34 +780,15 @@ function collectBookingData(session) {
     };
 }
 
-function showBookingConfirmation(bookingData) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
-    modal.innerHTML = `
-        <div class="bg-space-dark border border-neon-blue rounded-lg p-6 max-w-md mx-4">
-            <h2 class="font-orbitron text-neon-green text-xl mb-4">🚀 Booking Confirmed!</h2>
-            <p class="text-gray-300 mb-4">Your space journey to ${bookingData.destination} has been booked successfully!</p>
-            <p class="text-neon-cyan mb-4">Total: $${bookingData.totalPrice.toLocaleString()}</p>
-            <button onclick="redirectToBookings()" class="w-full bg-neon-blue text-space-dark py-2 rounded-lg font-bold hover:bg-neon-cyan transition-colors">
-                View My Bookings
-            </button>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
-
-function redirectToBookings() {
-    window.location.href = 'my-bookings.html';
-}
-
 function clearFormData() {
     localStorage.removeItem('bookingFormData');
 }
 
-// 11. INITIALISATION FINALE
+// 8. INITIALISATION FINALE
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
     
+    // Initialisation différée de la validation
     setTimeout(() => {
         setupInputValidation();
     }, 1000);
