@@ -30,6 +30,7 @@
             // Only create My Bookings link if we're NOT on the My Bookings page
             if (!window.location.pathname.includes('my-bookings.html')) {
                 const bookingsLink = document.createElement('a');
+                // bookingsLink.href = '/html/my-bookings.html';
                 bookingsLink.href = 'my-bookings.html';
                 bookingsLink.textContent = 'My Bookings';
                 bookingsLink.className = 'px-4 py-2 text-white hover:text-gray-300';
@@ -48,7 +49,7 @@
             loginBtn.textContent = 'Login';
             loginBtn.className = 'px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white';
             loginBtn.addEventListener('click', function(){ 
-                window.location.href = 'login.html'; 
+                window.location.href = '/html/login.html'; 
             });
             authContainer.appendChild(loginBtn);
         }
