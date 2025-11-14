@@ -12,7 +12,8 @@ async function initializeDestinationsPage() {
 // Chargement des données depuis le JSON
 async function loadDestinationsData() {
     try {
-        const response = await fetch('../destinations.json');
+        const response = await fetch('/../destinations.json');
+        console.log('Fetching destinations data from JSON...');
         if (!response.ok) throw new Error('Failed to load destinations data');
         
         const data = await response.json();
